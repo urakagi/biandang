@@ -1,6 +1,18 @@
 doctype html
 html
     head
+        script(src="lib/jquery-3.2.1.min.js")
+        script(src="client-js/manage_client.js")
     body
-        div 描述
-        textarea#description(cols=70,rows=8)
+        h2= __('menu')
+        p
+            | 說明
+            br
+            textarea#description(cols=70,rows=8)
+        p
+            button#add_image_url(onclick="addImageUrl()")= __('add_image_url')
+            span ：
+            input#image_url(size=50)
+        p
+            button#add_image(onclick="uploadImage()")= __('add_image')
+        p#images

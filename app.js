@@ -13,23 +13,14 @@ var app = express();
 
 // i18n setup
 i18n.configure({
-    // 利用するlocalesを設定。これが辞書ファイルとひも付きます
-    locales: ['zh-tw', 'en'],
-    defaultLocale: 'zh-tw',
-    // 辞書ファイルのありかを指定
+    locales: ['zh-TW', 'en'],
+    defaultLocale: 'zh-TW',
     directory: __dirname + "/locales",
     // オブジェクトを利用したい場合はtrue
     objectNotation: true
 });
 
 app.use(i18n.init);
-// manualでi18nセッション管理できるように設定しておきます
-app.use(function (req, res, next) {
-    if (req.session.locale) {
-        i18n.setLocale(req, req.session.locale);
-    }
-    next();
-});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -44,6 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', manage);
+app.use('/add_image_url', manage);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
