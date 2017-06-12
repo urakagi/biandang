@@ -6,5 +6,6 @@
 	"order": "你要吃什麼？",
 	"add_image": "上傳圖片",
 	"add_image_url": "新增圖片網址",
-	"empty_url_hint": "請輸入圖片網址！"
+	"empty_url_hint": "請輸入圖片網址！",
+	"delete": "刪除"
 }

@@ -2,31 +2,122 @@ var express = require('express');
 var router = express.Router();
 var sprintf = require("sprintf-js").sprintf;
 var levelup = require('level');
+var fs = require('fs');
 
 var db = levelup('./mydb');
 
 router.get('/', function(req, res, next) {
-    res.render('manage');
+    generateImagesHTML(null, function (imagesHTML) {
+        res.render('manage', {'imagesHTML': imagesHTML});
+    });
 });
 
-router.post('/add_image_url', function(req, res, next) {
-    var imagesHTML = '';
-    var image_urls = [];
-    var url = encodeURIComponent(req.body.url);
+router.post('/uploadImage', function (req, res) {
+    if (!req.files)
+        return res.status(400).send('No files were uploaded.');
+
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+    var uploadedFile = req.files.filesToUpload;
+    if (!uploadedFile)
+        return res.status(400).send('No files were uploaded.');
+
+    if (!fs.existsSync('public/uploaded')){
+        fs.mkdirSync('public/uploaded');
+    }
+
+    // Use the mv() method to place the file somewhere on your server
+    var fileName = '/uploaded/' + Date.now() + '_' + uploadedFile.name;
+    uploadedFile.mv('public' + fileName, function(err) {
+        if (err)
+            return res.status(500).send(err);
+
+        addImageUrlToDB(encodeURIComponent(fileName), function () {
+            res.redirect('/');
+        });
+    });
+});
+
+router.put('/imageUrl/:img', function(req, res, next) {
+    addImageUrlAndSendImageHTML(encodeURIComponent(req.params.img), res);
+});
+
+router.delete('/imageUrl/:img', function (req, res) {
+    var img = req.params.img;
+    if (img.indexOf('/uploaded/') == 0) {
+        fs.unlink('public' + img);
+    }
+    deleteImageUrlFromDB(encodeURIComponent(img), function (imageUrls) {
+        generateImagesHTML(imageUrls, function (imagesHTML) {
+            res.send(imagesHTML);
+        })
+    });
+});
+
+function addImageUrlToDB(url, callback) {
+    var imageUrls = [];
     db.get('image_urls', function (err, value) {
         if (!(err && err.notFound)) {
             var urls = value.split(',');
             for (var i in urls) {
-                image_urls.push(urls[i]);
+                imageUrls.push(urls[i]);
             }
         }
-        image_urls.push(url);
-        db.put('image_urls', image_urls);
-        for (var i in image_urls) {
-            imagesHTML += sprintf('<img src="%s">', decodeURIComponent(image_urls[i]));
+        if (url) {
+            imageUrls.push(url);
+            db.put('image_urls', imageUrls);
         }
-        res.send(imagesHTML);
+        if (callback) {
+            callback(imageUrls);
+        }
     });
-});
+}
+
+function deleteImageUrlFromDB(url, callback) {
+    var imageUrls = [];
+    db.get('image_urls', function (err, value) {
+        if (!(err && err.notFound)) {
+            var urls = value.split(',');
+            for (var i in urls) {
+                if (url != urls[i]) {
+                    imageUrls.push(urls[i]);
+                }
+            }
+        }
+        db.put('image_urls', imageUrls);
+        if (callback) {
+            callback(imageUrls);
+        }
+    });
+}
+
+function addImageUrlAndSendImageHTML(url, res) {
+    addImageUrlToDB(url, function (imageUrls) {
+        generateImagesHTML(imageUrls, function (imagesHTML) {
+            res.send(imagesHTML);
+        })
+    });
+}
+
+function generateImagesHTML(imageUrls, callback) {
+    var imagesHTML = '';
+    if (!imageUrls) {
+        var dbImageUrls = [];
+        db.get('image_urls', function (err, value) {
+            if (!(err && err.notFound)) {
+                var urls = value.split(',');
+                for (var i in urls) {
+                    dbImageUrls.push(urls[i]);
+                }
+            }
+            generateImagesHTML(dbImageUrls, callback);
+        });
+        return;
+    }
+
+    for (var i in imageUrls) {
+        imagesHTML += sprintf('<img class="previewInList" src="%s">', decodeURIComponent(imageUrls[i]));
+    }
+    callback(imagesHTML);
+}
 
 module.exports = router;

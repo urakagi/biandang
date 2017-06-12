@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var i18n = require('i18n');
+var fileUpload = require('express-fileupload');
 
 var manage = require('./routes/manage');
 var users = require('./routes/users');
@@ -21,6 +22,7 @@ i18n.configure({
 });
 
 app.use(i18n.init);
+app.use(fileUpload());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,7 +37,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', manage);
-app.use('/add_image_url', manage);
+app.use('/uploadImage', manage);
+app.use('/imageUrl', manage);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

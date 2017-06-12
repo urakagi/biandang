@@ -3,8 +3,10 @@ html
     head
         script(src="lib/jquery-3.2.1.min.js")
         script(src="client-js/manage_client.js")
+        link(href='/css/manage.css', rel='stylesheet')
     body
         h2= __('menu')
+        p#images!= imagesHTML
         p
             | 說明
             br
@@ -14,5 +16,12 @@ html
             span ：
             input#image_url(size=50)
         p
-            button#add_image(onclick="uploadImage()")= __('add_image')
-        p#images
+            form(enctype="multipart/form-data", method="post", action="/uploadImage")
+                input#filesToUpload(type="file", name="filesToUpload", multiple="multiple")= __('add_image')
+                output#filesInfo
+                br
+                input(type="submit", value="#{__('add_image')}")#add_image
+        #imageView
+            img#largeView
+        #cover
+            a#deleteImage(href="javascript:void(0);")= __('delete')
