@@ -53,6 +53,12 @@ router.delete('/imageUrl/:img', function (req, res) {
     });
 });
 
+router.post('/description', function (req, res) {
+    var desc = req.body.data;
+    db.put('description', desc);
+    res.send('OK');
+});
+
 function addImageUrlToDB(url, callback) {
     var imageUrls = [];
     db.get('image_urls', function (err, value) {

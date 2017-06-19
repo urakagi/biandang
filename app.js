@@ -39,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', manage);
 app.use('/uploadImage', manage);
 app.use('/imageUrl', manage);
+app.use('/description', manage);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

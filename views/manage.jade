@@ -9,6 +9,7 @@ html
         p#images!= imagesHTML
         p
             | 說明
+            span#saving
             br
             textarea#description(cols=70,rows=8)
         p
@@ -22,6 +23,6 @@ html
                 br
                 input(type="submit", value="#{__('add_image')}")#add_image
         #imageView
-            img#largeView
+            img
         #cover
             a#deleteImage(href="javascript:void(0);")= __('delete')

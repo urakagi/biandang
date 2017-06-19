@@ -15,6 +15,11 @@
     max-height: 90%;
 }
 
+#imageView img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
 #cover {
     position: fixed;
     top: 0;
@@ -30,5 +35,8 @@
 #cover a {
     color: white;
     font-size: larger;
-    z-index: 15;
+}
+
+#saving {
+    color: green;
 }
