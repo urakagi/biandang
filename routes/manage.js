@@ -7,8 +7,17 @@ var fs = require('fs');
 var db = levelup('./mydb');
 
 router.get('/', function(req, res, next) {
-    generateImagesHTML(null, function (imagesHTML) {
-        res.render('manage', {'imagesHTML': imagesHTML});
+    db.get('description', function (err, value) {
+        var desc = '';
+        if (!(err && err.notFound)) {
+            desc = value;
+        }
+        generateImagesHTML(null, function (imagesHTML) {
+            res.render('manage', {
+                'imagesHTML': imagesHTML,
+                'description': desc
+            });
+        });
     });
 });
 
