@@ -1,6 +1,18 @@
-.previewInList {
+.previewFrame {
+    display: inline-block;
+    text-align: center;
     width: 240px;
     height: 300px;
+    background-color: whitesmoke;
+}
+
+.previewInList {
+    max-width: 240px;
+    max-height: 300px;
+    height: auto;
+    width: auto;
+    margin: auto;
+    display: block;
 }
 
 #imageView {

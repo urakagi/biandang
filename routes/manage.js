@@ -74,7 +74,9 @@ function addImageUrlToDB(url, callback) {
         if (!(err && err.notFound)) {
             var urls = value.split(',');
             for (var i in urls) {
-                imageUrls.push(urls[i]);
+                if (urls[i] != '') {
+                    imageUrls.push(urls[i]);
+                }
             }
         }
         if (url) {
@@ -94,7 +96,9 @@ function deleteImageUrlFromDB(url, callback) {
             var urls = value.split(',');
             for (var i in urls) {
                 if (url != urls[i]) {
-                    imageUrls.push(urls[i]);
+                    if (urls[i] != '') {
+                        imageUrls.push(urls[i]);
+                    }
                 }
             }
         }
@@ -108,6 +112,7 @@ function deleteImageUrlFromDB(url, callback) {
 function addImageUrlAndSendImageHTML(url, res) {
     addImageUrlToDB(url, function (imageUrls) {
         generateImagesHTML(imageUrls, function (imagesHTML) {
+            console.log(imagesHTML);
             res.send(imagesHTML);
         })
     });
@@ -121,7 +126,9 @@ function generateImagesHTML(imageUrls, callback) {
             if (!(err && err.notFound)) {
                 var urls = value.split(',');
                 for (var i in urls) {
-                    dbImageUrls.push(urls[i]);
+                    if (urls[i] != '') {
+                        dbImageUrls.push(urls[i]);
+                    }
                 }
             }
             generateImagesHTML(dbImageUrls, callback);
@@ -130,7 +137,7 @@ function generateImagesHTML(imageUrls, callback) {
     }
 
     for (var i in imageUrls) {
-        imagesHTML += sprintf('<img class="previewInList" src="%s">', decodeURIComponent(imageUrls[i]));
+        imagesHTML += sprintf('<div class="previewFrame"><img class="previewInList" src="%s"></div>', decodeURIComponent(imageUrls[i]));
     }
     callback(imagesHTML);
 }

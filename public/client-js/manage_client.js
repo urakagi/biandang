@@ -54,6 +54,7 @@ function addImageUrl() {
         url: '/imageUrl/' + url
     })
         .done(function (html) {
+            $('#images').empty();
             $('#images').html(html);
             addPreviewImageEvents();
         });
